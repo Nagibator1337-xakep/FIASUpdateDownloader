@@ -7,7 +7,7 @@ import java.util.zip.ZipInputStream;
 
 public class UnzipFile {
     private final String userHomeDir = System.getProperty("user.home");
-    private String zipFilePath = userHomeDir + "\\Desktop\\gar\\gar_delta_xml.zip";
+    private String zipFilePath = userHomeDir +File.separator+ "gar" +File.separator+ "gar_delta_xml.zip";
     private final String zipDirPath = zipFilePath.substring(0,zipFilePath.length()-4);
 
     public UnzipFile() {

@@ -2,8 +2,12 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
+
+import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
 
 public class ActualGarDeltaDownloader {
     private static final int CONNECT_TIMEOUT = 2000;
@@ -11,7 +15,7 @@ public class ActualGarDeltaDownloader {
 
     String userHomeDir = System.getProperty("user.home");
     private String urlPath = "https://fias.nalog.ru/Public/Downloads/Actual/gar_delta_xml.zip";
-    private String filePath = userHomeDir + "\\Desktop\\gar\\gar_delta_xml.zip";
+    private String filePath = userHomeDir +File.separator+ "gar" +File.separator+ "gar_delta_xml.zip";
 
     public ActualGarDeltaDownloader() {
     }
@@ -55,11 +59,19 @@ public class ActualGarDeltaDownloader {
     }
 
     private void utilsDownload() throws IOException {
-        FileUtils.copyURLToFile(
-                new URL(urlPath),
-                new File(filePath),
-                CONNECT_TIMEOUT,
-                READ_TIMEOUT);
+        URL source = new URL(urlPath);
+        File destination = new File(filePath);
+        final URLConnection connection = source.openConnection();
+
+        connection.setConnectTimeout(CONNECT_TIMEOUT);
+        connection.setReadTimeout(READ_TIMEOUT);
+
+        try (final InputStream stream = connection.getInputStream()) {
+            copyInputStreamToFile(stream, destination);
+        } catch (IOException e) {
+            System.out.println("Запись в файл невозможна");
+        }
+
     }
 
     private long checkFileSizeAtUrl(String urlPath) throws IOException {
