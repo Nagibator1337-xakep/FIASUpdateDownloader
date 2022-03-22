@@ -1,7 +1,5 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -28,9 +26,17 @@ public class UnzipFile {
     public void unzip() throws IOException {
         File destDir = new File(zipDirPath);
         byte[] buffer = new byte[1024];
+        int filesCounter = 0;
 
-        ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFilePath));
-        ZipEntry zipEntry = zis.getNextEntry();
+        ZipInputStream zis = null;
+        try {
+            zis = new ZipInputStream(new FileInputStream(zipFilePath));
+            System.out.println("Приступаем к распаковке архива");
+        } catch (FileNotFoundException e) {
+            System.out.println("Файл не найден, распаковка невозможна");
+        }
+
+        ZipEntry zipEntry = Objects.requireNonNull(zis).getNextEntry();
 
         while (zipEntry != null) {
             File newFile = newFile(destDir, zipEntry);
@@ -52,7 +58,9 @@ public class UnzipFile {
                 while ((len = zis.read(buffer)) > 0) {
                     fos.write(buffer, 0, len);
                 }
-                System.out.println("Распаковка файла: "+newFile.getName());
+                System.out.print(" | Распаковка файла: "+newFile.getName().substring(0,20)+"....XML");
+                System.out.print("                                           \r");
+                filesCounter++;
                 fos.close();
             }
             zipEntry = zis.getNextEntry();
@@ -60,7 +68,7 @@ public class UnzipFile {
 
         zis.closeEntry();
         zis.close();
-        System.out.println("Распаковка завершена");
+        System.out.println("\nРаспаковка завершена. Извлечено "+filesCounter+" файлов.");
     }
 
     private static File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {

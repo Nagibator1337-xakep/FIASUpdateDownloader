@@ -14,7 +14,7 @@ public class ActualGarDeltaDownloader {
     private static final int READ_TIMEOUT = 2000;
 
     String userHomeDir = System.getProperty("user.home");
-    private String urlPath = "https://fias.nalog.ru/Public/Downloads/Actual/gar_delta_xml.zip";
+    private String urlPath;
     private String filePath = userHomeDir +File.separator+ "gar" +File.separator+ "gar_delta_xml.zip";
 
     public ActualGarDeltaDownloader() {
@@ -52,7 +52,7 @@ public class ActualGarDeltaDownloader {
             utilsDownload();
             System.out.println("Загрузка завершена!");
         } else {
-            System.out.println("Загрузка обновления...");
+            System.out.println("Начинаем загрузку обновления");
             utilsDownload();
             System.out.println("Загрузка завершена!");
         }
@@ -67,8 +67,10 @@ public class ActualGarDeltaDownloader {
         connection.setReadTimeout(READ_TIMEOUT);
 
         try (final InputStream stream = connection.getInputStream()) {
+            System.out.println("      Идет загрузка обновления, ожидайте...");
             copyInputStreamToFile(stream, destination);
         } catch (IOException e) {
+            e.printStackTrace();
             System.out.println("Запись в файл невозможна");
         }
 
